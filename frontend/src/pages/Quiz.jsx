@@ -39,6 +39,14 @@ function Quiz() {
 
   const [repValid, setRepValid] = useState([]);
 
+  const invalidPic = [
+    "Breccan",
+    "Edern",
+    "Le Seigneur Jacca",
+    "Les Jumelles du pêcheur",
+    "Séfriane d'Aquitaine",
+  ];
+
   // Récupération des citations et des réponses
 
   function getQuestion() {
@@ -54,7 +62,10 @@ function Quiz() {
       axios
         .get(`${API_URL}/random`)
         .then((res) => {
-          if (res.data.citation.citation.length < 230 && val < 5) {
+          if (
+            (res.data.citation.citation.length < 230 && val < 5) ||
+            invalidPic.indexOf(res.data.citation.infos.personnage) !== -1
+          ) {
             setCitation((oldArray) => [
               ...oldArray,
               res.data.citation.citation,
@@ -148,8 +159,10 @@ function Quiz() {
   function triDouble(arrValid, arrGeneral, questionId) {
     const reponse = [];
     reponse[0] = arrValid[questionId - 1];
+    arrGeneral.splice(arrGeneral.indexOf(reponse[0]), 1);
     for (let i = 1; i < 4; i += 1) {
       reponse[i] = random(arrGeneral);
+      arrGeneral.splice(arrGeneral.indexOf(reponse[i]), 1);
     }
 
     function shuffle(array) {
