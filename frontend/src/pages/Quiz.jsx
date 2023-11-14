@@ -157,29 +157,24 @@ function Quiz() {
 
     const reponse = [reponse0, reponse1, reponse2, reponse3];
 
-    const index = [0, 1, 2, 3];
-
-    const index0 = random(index);
-    index.splice(index.indexOf(index0), 1);
-    const index1 = random(index);
-    index.splice(index.indexOf(index1), 1);
-    const index2 = random(index);
-    index.splice(index.indexOf(index2), 1);
-    const index3 = random(index);
-    index.splice(index.indexOf(index3), 1);
-
-    setRep([
-      reponse[index0],
-      reponse[index1],
-      reponse[index2],
-      reponse[index3],
-    ]);
-
-    for (let i = 0; i < 4; i += 1) {
-      if (reponse[i] !== undefined) {
-        arrGeneral.push(reponse[i]);
+    function shuffle(array) {
+      const copy = [];
+      let n = array.length;
+      let i;
+      while (n) {
+        i = Math.floor(Math.random() * n);
+        n -= 1;
+        copy.push(array.splice(i, 1)[0]);
       }
+      for (let j = 0; j < 4; j += 1) {
+        if (copy[j] !== undefined) {
+          arrGeneral.push(copy[j]);
+        }
+      }
+      return copy;
     }
+
+    setRep(shuffle(reponse));
   }
 
   // Tri des réponses
