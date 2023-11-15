@@ -101,7 +101,7 @@ function Quiz() {
         .catch((err) => console.error(`Oups, une erreur est survenu: ${err}`));
     }
 
-    for (let i = 0; i < 500; i += 1) {
+    for (let i = 0; i < 50; i += 1) {
       SetReponse();
     }
   }
