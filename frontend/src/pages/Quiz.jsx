@@ -39,6 +39,14 @@ function Quiz() {
 
   const [repValid, setRepValid] = useState([]);
 
+  const invalidPic = [
+    "Breccan",
+    "Edern",
+    "Le Seigneur Jacca",
+    "Les Jumelles du pêcheur",
+    "Séfriane d'Aquitaine",
+  ];
+
   // Récupération des citations et des réponses
 
   function getQuestion() {
@@ -54,7 +62,10 @@ function Quiz() {
       axios
         .get(`${API_URL}/random`)
         .then((res) => {
-          if (res.data.citation.citation.length < 230 && val < 5) {
+          if (
+            (res.data.citation.citation.length < 230 && val < 5) ||
+            invalidPic.indexOf(res.data.citation.infos.personnage) !== -1
+          ) {
             setCitation((oldArray) => [
               ...oldArray,
               res.data.citation.citation,
@@ -146,40 +157,32 @@ function Quiz() {
   // Tri pour éviter les doublons
 
   function triDouble(arrValid, arrGeneral, questionId) {
-    const reponse0 = arrValid[questionId - 1];
-    arrGeneral.splice(arrGeneral.indexOf(reponse0), 1);
-    const reponse1 = random(arrGeneral);
-    arrGeneral.splice(arrGeneral.indexOf(reponse1), 1);
-    const reponse2 = random(arrGeneral);
-    arrGeneral.splice(arrGeneral.indexOf(reponse2), 1);
-    const reponse3 = random(arrGeneral);
-    arrGeneral.splice(arrGeneral.indexOf(reponse3), 1);
-
-    const reponse = [reponse0, reponse1, reponse2, reponse3];
-
-    const index = [0, 1, 2, 3];
-
-    const index0 = random(index);
-    index.splice(index.indexOf(index0), 1);
-    const index1 = random(index);
-    index.splice(index.indexOf(index1), 1);
-    const index2 = random(index);
-    index.splice(index.indexOf(index2), 1);
-    const index3 = random(index);
-    index.splice(index.indexOf(index3), 1);
-
-    setRep([
-      reponse[index0],
-      reponse[index1],
-      reponse[index2],
-      reponse[index3],
-    ]);
-
-    for (let i = 0; i < 4; i += 1) {
-      if (reponse[i] !== undefined) {
-        arrGeneral.push(reponse[i]);
-      }
+    const reponse = [];
+    reponse[0] = arrValid[questionId - 1];
+    arrGeneral.splice(arrGeneral.indexOf(reponse[0]), 1);
+    for (let i = 1; i < 4; i += 1) {
+      reponse[i] = random(arrGeneral);
+      arrGeneral.splice(arrGeneral.indexOf(reponse[i]), 1);
     }
+
+    function shuffle(array) {
+      const copy = [];
+      let n = array.length;
+      let i;
+      while (n) {
+        i = Math.floor(Math.random() * n);
+        n -= 1;
+        copy.push(array.splice(i, 1)[0]);
+      }
+      for (let j = 0; j < 4; j += 1) {
+        if (copy[j] !== undefined) {
+          arrGeneral.push(copy[j]);
+        }
+      }
+      return copy;
+    }
+
+    setRep(shuffle(reponse));
   }
 
   // Tri des réponses
@@ -227,58 +230,32 @@ function Quiz() {
   // Vérification de la réponse
 
   const verifRep = (e) => {
+    function repFunction(reponse) {
+      if (
+        e.target.textContent !== reponse[question - 1] ||
+        e.target.textContent === null
+      ) {
+        nextQuestion();
+        setRepValid((oldArray) => [...oldArray, false]);
+      } else {
+        setScore((prevScore) => prevScore + 1);
+        nextQuestion();
+        setRepValid((oldArray) => [...oldArray, true]);
+      }
+    }
+
     switch (sousQuestion) {
       case 1:
-        if (
-          e.target.textContent !== repPersonnage[question - 1] ||
-          e.target.textContent === null
-        ) {
-          nextQuestion();
-          setRepValid((oldArray) => [...oldArray, false]);
-        } else {
-          setScore((prevScore) => prevScore + 1);
-          nextQuestion();
-          setRepValid((oldArray) => [...oldArray, true]);
-        }
+        repFunction(repPersonnage);
         break;
       case 2:
-        if (
-          e.target.textContent !== repActeur[question - 1] ||
-          e.target.textContent === null
-        ) {
-          nextQuestion();
-          setRepValid((oldArray) => [...oldArray, false]);
-        } else {
-          setScore((prevScore) => prevScore + 1);
-          nextQuestion();
-          setRepValid((oldArray) => [...oldArray, true]);
-        }
+        repFunction(repActeur);
         break;
       case 3:
-        if (
-          e.target.textContent !== repSaison[question - 1] ||
-          e.target.textContent === null
-        ) {
-          nextQuestion();
-          setRepValid((oldArray) => [...oldArray, false]);
-        } else {
-          setScore((prevScore) => prevScore + 1);
-          nextQuestion();
-          setRepValid((oldArray) => [...oldArray, true]);
-        }
+        repFunction(repSaison);
         break;
       case 4:
-        if (
-          e.target.textContent !== repEpisode[question - 1] ||
-          e.target.textContent === null
-        ) {
-          nextQuestion();
-          setRepValid((oldArray) => [...oldArray, false]);
-        } else {
-          setScore((prevScore) => prevScore + 1);
-          nextQuestion();
-          setRepValid((oldArray) => [...oldArray, true]);
-        }
+        repFunction(repEpisode);
         break;
       default:
         nextQuestion();
@@ -358,7 +335,7 @@ function Quiz() {
                   "Dans quel épisode a été dit cette citation ?"}
             </p>
             <div className="bg-label rounded-[20px] w-[75%] text-center py-4 md:py-16 tall:py-4 mt-4">
-              <p className="text-black text-xs px-2 md:text-2xl tall:text-xl">
+              <p className="text-black text-base px-2 md:text-2xl tall:text-xl">
                 {citation[question - 1]}
               </p>
             </div>
