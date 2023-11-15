@@ -60,12 +60,7 @@ function Quiz() {
 
     function SetReponse() {
       axios
-        .get(`${API_URL}/random`, {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
-        })
+        .get(`${API_URL}/random`)
         .then((res) => {
           if (
             res.data.citation.citation.length < 230 &&
