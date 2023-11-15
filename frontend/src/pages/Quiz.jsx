@@ -285,8 +285,8 @@ function Quiz() {
           <div className="bg-green w-[80%] md:w-[50%] h-auto py-8 rounded-[10px] flex flex-col items-center">
             <p className="text-label text-4xl">Règles:</p>
             <p className="text-center mt-4 md:mt-8 text-label text-xl mx-4">
-              En garde ma biquette ! 4 choix possibles et puis c'est tout ! Et
-              secouez vous un peu les miches !
+              En garde ma biquette ! 5 citations, 4 questions, 4 choix possibles
+              ! Et tâchez de vous distinguer !
             </p>
             <img
               src={gif}
