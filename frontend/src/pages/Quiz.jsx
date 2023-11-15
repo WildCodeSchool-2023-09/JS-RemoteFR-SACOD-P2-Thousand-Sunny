@@ -7,6 +7,8 @@ import gif from "../assets/kaamelott-leodagan.gif";
 import gifChampion from "../assets/kaamelott-yvain.gif";
 import gifCon from "../assets/kaamelott-karadoc.gif";
 import interrogation from "../assets/interrogation.jpg";
+import gifPerdu from "../assets/ah-perdu.gif";
+import gifPro from "../assets/apprendre-reconnaitre-objets-redondants.gif";
 
 function Quiz() {
   const API_URL = "https://kaamelott.chaudie.re/api";
@@ -462,15 +464,46 @@ function Quiz() {
       {question === 6 && (
         <div className="fixed z-50 bg-back w-screen h-[calc(100vh-6rem)] md:h-[calc(100vh-7rem)] tall:h-[calc(100vh-6rem)] flex items-center justify-center">
           <div className="bg-green w-[80%] md:w-[50%] h-auto py-8 min-h-[60%] rounded-[10px] flex flex-col items-center">
-            <p className="text-label text-4xl">Résultat:</p>
-            <p>
-              Bravo {username} tu as obtenu un score de: {score}
-            </p>
-            <img
-              src={score < 11 ? gifCon : gifChampion}
-              alt="Gif"
-              className="hidden md:block tall:hidden md:mt-8 md:max-h-[40%]"
-            />
+            <p className="text-label text-4xl underline">Résultat:</p>
+            {score >= 10 && (
+              <p className=" text-3xl mt-2 text-label text-center">
+                Braaavoooo {username}, bravo... Ton score est de : {score}
+              </p>
+            )}
+            {score <= 10 && (
+              <p className=" text-3xl px-6 mt-2 text-label text-center">
+                Retro pecat et rex domini {username}, ca ne veut rien dire mais
+                c'est toujours mieux que ton score de {score}
+              </p>
+            )}
+            {score <= 5 && (
+              <img
+                src={gifCon}
+                alt="Gif"
+                className="hidden md:block tall:hidden md:mt-8 md:max-h-[40%]"
+              />
+            )}
+            {score > 5 && score <= 10 && (
+              <img
+                src={gifPerdu}
+                alt="Gif"
+                className="hidden md:block tall:hidden md:mt-8 md:max-h-[40%]"
+              />
+            )}
+            {score > 10 && score <= 15 && (
+              <img
+                src={gifPro}
+                alt="Gif"
+                className="hidden md:block tall:hidden md:mt-8 md:max-h-[40%]"
+              />
+            )}
+            {score > 15 && (
+              <img
+                src={gifChampion}
+                alt="Gif"
+                className="hidden md:block tall:hidden md:mt-8 md:max-h-[40%]"
+              />
+            )}
             <button
               type="button"
               className="bg-label px-24 py-4 text-2xl rounded-[10px] hover:bg-label-hover mt-8"
