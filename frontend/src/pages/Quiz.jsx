@@ -63,8 +63,9 @@ function Quiz() {
         .get(`${API_URL}/random`)
         .then((res) => {
           if (
-            (res.data.citation.citation.length < 230 && val < 5) ||
-            invalidPic.indexOf(res.data.citation.infos.personnage) !== -1
+            res.data.citation.citation.length < 230 &&
+            val < 5 &&
+            invalidPic.indexOf(res.data.citation.infos.personnage) === -1
           ) {
             setCitation((oldArray) => [
               ...oldArray,
@@ -335,13 +336,13 @@ function Quiz() {
                   "Dans quel épisode a été dit cette citation ?"}
             </p>
             <div className="bg-label rounded-[20px] w-[75%] text-center py-4 md:py-16 tall:py-4 mt-4">
-              <p className="text-black text-base px-2 md:text-2xl tall:text-xl">
+              <p className="text-black text-base px-2 md:text-2xl">
                 {citation[question - 1]}
               </p>
             </div>
-            <div className="grid gap-4 grid-cols-2 text-center pt-4 w-[60%]">
+            <div className="grid gap-4 grid-cols-2 text-center pt-4 w-auto min-w-[60%] max-w-[95%]">
               <div
-                className={`text-black py-[2px] md:py-2 tall:py-1 ${
+                className={`text-black py-[2px] md:py-2 tall:py-1 px-1 text-sm md:text-base ${
                   repValid[0] === false && "bg-[#a41919] text-label"
                 } ${repValid[0] === undefined && "bg-label"} ${
                   repValid[0] === true && "bg-[#008000] text-label"
@@ -354,7 +355,7 @@ function Quiz() {
                 </p>
               </div>
               <div
-                className={`text-black py-[2px] md:py-2 tall:py-1 ${
+                className={`text-black py-[2px] md:py-2 tall:py-1 px-1 text-sm md:text-base ${
                   repValid[1] === false && "bg-[#a41919] text-label"
                 } ${repValid[1] === undefined && "bg-label"} ${
                   repValid[1] === true && "bg-[#008000] text-label"
@@ -368,7 +369,7 @@ function Quiz() {
                 </p>
               </div>
               <div
-                className={`text-black py-[2px] md:py-2 tall:py-1 ${
+                className={`text-black py-[2px] md:py-2 tall:py-1 px-1 text-sm md:text-base ${
                   repValid[2] === false && "bg-[#a41919] text-label"
                 } ${repValid[2] === undefined && "bg-label"} ${
                   repValid[2] === true && "bg-[#008000] text-label"
@@ -382,7 +383,7 @@ function Quiz() {
                 </p>
               </div>
               <div
-                className={`text-black py-[2px] md:py-2 tall:py-1 ${
+                className={`text-black py-[2px] md:py-2 tall:py-1 px-1 text-sm md:text-base ${
                   repValid[3] === false && "bg-[#a41919] text-label"
                 } ${repValid[3] === undefined && "bg-label"} ${
                   repValid[3] === true && "bg-[#008000] text-label"
