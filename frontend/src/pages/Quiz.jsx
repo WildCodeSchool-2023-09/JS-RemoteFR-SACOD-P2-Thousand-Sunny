@@ -337,7 +337,7 @@ function Quiz() {
                 : sousQuestion === 4 &&
                   "Dans quel épisode a été dit cette citation ?"}
             </p>
-            <div className="bg-label rounded-[20px] w-[75%] text-center py-4 md:py-16 tall:py-4 mt-4">
+            <div className="bg-label rounded-[20px] w-[75%] tall:min-w-[75%] tall:w-auto tall:max-w-[95%] text-center py-4 md:py-16 tall:py-4 mt-4">
               <p className="text-black text-base px-2 md:text-2xl">
                 {citation[question - 1]}
               </p>
