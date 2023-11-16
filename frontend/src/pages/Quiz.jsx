@@ -11,7 +11,7 @@ import gifPerdu from "../assets/ah-perdu.gif";
 import gifPro from "../assets/apprendre-reconnaitre-objets-redondants.gif";
 
 function Quiz() {
-  const API_URL = "https://kaamelott.chaudie.re/api";
+  const API_URL = "https://kaamelott-backend-e3yut.ondigitalocean.app/api";
 
   const [question, setQuestion] = useState(0);
   const [sousQuestion, setSousQuestion] = useState(0);
