@@ -1,4 +1,8 @@
+import { useState } from "react";
+
 function Contact() {
+  const [message, setMessage] = useState(false);
+
   return (
     <div className="bg-back fixed w-screen h-[calc(100vh-6rem)] md:h-[calc(100vh-7rem)] tall:h-[calc(100vh-6rem)] flex items-center justify-center">
       <div className="bg-green flex flex-col h-auto py-8 px-6 w-auto md:w-auto items-center rounded-[10px]">
@@ -6,6 +10,10 @@ function Contact() {
           className="flex flex-col my-auto"
           onSubmit={(e) => {
             e.preventDefault();
+            setMessage(true);
+            setTimeout(() => {
+              setMessage(false);
+            }, 2000);
           }}
         >
           <label htmlFor="Message" className="text-label">
@@ -46,6 +54,13 @@ function Contact() {
               className="bg-label px-24 py-4 text-2xl rounded-[10px] hover:bg-label-hover mt-8 "
             />
           </div>
+          {message && (
+            <div className="flex justify-center">
+              <p className="text-label mt-4 text-lg">
+                Votre message a été envoyé!
+              </p>
+            </div>
+          )}
         </form>
       </div>
     </div>

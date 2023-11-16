@@ -7,9 +7,11 @@ import gif from "../assets/kaamelott-leodagan.gif";
 import gifChampion from "../assets/kaamelott-yvain.gif";
 import gifCon from "../assets/kaamelott-karadoc.gif";
 import interrogation from "../assets/interrogation.jpg";
+import gifPerdu from "../assets/ah-perdu.gif";
+import gifPro from "../assets/apprendre-reconnaitre-objets-redondants.gif";
 
 function Quiz() {
-  const API_URL = "https://kaamelott.chaudie.re/api";
+  const API_URL = "https://kaamelott-backend-e3yut.ondigitalocean.app/api";
 
   const [question, setQuestion] = useState(0);
   const [sousQuestion, setSousQuestion] = useState(0);
@@ -39,6 +41,14 @@ function Quiz() {
 
   const [repValid, setRepValid] = useState([]);
 
+  const invalidPic = [
+    "Breccan",
+    "Edern",
+    "Le Seigneur Jacca",
+    "Les Jumelles du pêcheur",
+    "Séfriane d'Aquitaine",
+  ];
+
   // Récupération des citations et des réponses
 
   function getQuestion() {
@@ -54,7 +64,11 @@ function Quiz() {
       axios
         .get(`${API_URL}/random`)
         .then((res) => {
-          if (res.data.citation.citation.length < 230 && val < 5) {
+          if (
+            res.data.citation.citation.length < 230 &&
+            val < 5 &&
+            invalidPic.indexOf(res.data.citation.infos.personnage) === -1
+          ) {
             setCitation((oldArray) => [
               ...oldArray,
               res.data.citation.citation,
@@ -146,40 +160,32 @@ function Quiz() {
   // Tri pour éviter les doublons
 
   function triDouble(arrValid, arrGeneral, questionId) {
-    const reponse0 = arrValid[questionId - 1];
-    arrGeneral.splice(arrGeneral.indexOf(reponse0), 1);
-    const reponse1 = random(arrGeneral);
-    arrGeneral.splice(arrGeneral.indexOf(reponse1), 1);
-    const reponse2 = random(arrGeneral);
-    arrGeneral.splice(arrGeneral.indexOf(reponse2), 1);
-    const reponse3 = random(arrGeneral);
-    arrGeneral.splice(arrGeneral.indexOf(reponse3), 1);
-
-    const reponse = [reponse0, reponse1, reponse2, reponse3];
-
-    const index = [0, 1, 2, 3];
-
-    const index0 = random(index);
-    index.splice(index.indexOf(index0), 1);
-    const index1 = random(index);
-    index.splice(index.indexOf(index1), 1);
-    const index2 = random(index);
-    index.splice(index.indexOf(index2), 1);
-    const index3 = random(index);
-    index.splice(index.indexOf(index3), 1);
-
-    setRep([
-      reponse[index0],
-      reponse[index1],
-      reponse[index2],
-      reponse[index3],
-    ]);
-
-    for (let i = 0; i < 4; i += 1) {
-      if (reponse[i] !== undefined) {
-        arrGeneral.push(reponse[i]);
-      }
+    const reponse = [];
+    reponse[0] = arrValid[questionId - 1];
+    arrGeneral.splice(arrGeneral.indexOf(reponse[0]), 1);
+    for (let i = 1; i < 4; i += 1) {
+      reponse[i] = random(arrGeneral);
+      arrGeneral.splice(arrGeneral.indexOf(reponse[i]), 1);
     }
+
+    function shuffle(array) {
+      const copy = [];
+      let n = array.length;
+      let i;
+      while (n) {
+        i = Math.floor(Math.random() * n);
+        n -= 1;
+        copy.push(array.splice(i, 1)[0]);
+      }
+      for (let j = 0; j < 4; j += 1) {
+        if (copy[j] !== undefined) {
+          arrGeneral.push(copy[j]);
+        }
+      }
+      return copy;
+    }
+
+    setRep(shuffle(reponse));
   }
 
   // Tri des réponses
@@ -214,14 +220,12 @@ function Quiz() {
     if (sousQuestion < 4) {
       setSousQuestion((prevSousQuestion) => prevSousQuestion + 1);
       triRep(question, sousQuestion + 1); // Pass the updated sousQuestion
-      console.info("Score: ", score);
     } else {
       setTimeout(() => {
         setRepValid([]);
         setQuestion((prevQuestion) => prevQuestion + 1);
         setSousQuestion(1);
         triRep(question + 1, 1); // Pass the updated question
-        console.info("Score: ", score);
       }, 3000);
     }
   }
@@ -229,58 +233,32 @@ function Quiz() {
   // Vérification de la réponse
 
   const verifRep = (e) => {
+    function repFunction(reponse) {
+      if (
+        e.target.textContent !== reponse[question - 1] ||
+        e.target.textContent === null
+      ) {
+        nextQuestion();
+        setRepValid((oldArray) => [...oldArray, false]);
+      } else {
+        setScore((prevScore) => prevScore + 1);
+        nextQuestion();
+        setRepValid((oldArray) => [...oldArray, true]);
+      }
+    }
+
     switch (sousQuestion) {
       case 1:
-        if (
-          e.target.textContent !== repPersonnage[question - 1] ||
-          e.target.textContent === null
-        ) {
-          nextQuestion();
-          setRepValid((oldArray) => [...oldArray, false]);
-        } else {
-          setScore((prevScore) => prevScore + 1);
-          nextQuestion();
-          setRepValid((oldArray) => [...oldArray, true]);
-        }
+        repFunction(repPersonnage);
         break;
       case 2:
-        if (
-          e.target.textContent !== repActeur[question - 1] ||
-          e.target.textContent === null
-        ) {
-          nextQuestion();
-          setRepValid((oldArray) => [...oldArray, false]);
-        } else {
-          setScore((prevScore) => prevScore + 1);
-          nextQuestion();
-          setRepValid((oldArray) => [...oldArray, true]);
-        }
+        repFunction(repActeur);
         break;
       case 3:
-        if (
-          e.target.textContent !== repSaison[question - 1] ||
-          e.target.textContent === null
-        ) {
-          nextQuestion();
-          setRepValid((oldArray) => [...oldArray, false]);
-        } else {
-          setScore((prevScore) => prevScore + 1);
-          nextQuestion();
-          setRepValid((oldArray) => [...oldArray, true]);
-        }
+        repFunction(repSaison);
         break;
       case 4:
-        if (
-          e.target.textContent !== repEpisode[question - 1] ||
-          e.target.textContent === null
-        ) {
-          nextQuestion();
-          setRepValid((oldArray) => [...oldArray, false]);
-        } else {
-          setScore((prevScore) => prevScore + 1);
-          nextQuestion();
-          setRepValid((oldArray) => [...oldArray, true]);
-        }
+        repFunction(repEpisode);
         break;
       default:
         nextQuestion();
@@ -307,8 +285,8 @@ function Quiz() {
           <div className="bg-green w-[80%] md:w-[50%] h-auto py-8 rounded-[10px] flex flex-col items-center">
             <p className="text-label text-4xl">Règles:</p>
             <p className="text-center mt-4 md:mt-8 text-label text-xl mx-4">
-              En garde ma biquette ! 4 choix possibles et puis c'est tout ! Et
-              secouez vous un peu les miches !
+              En garde ma biquette ! 5 citations, 4 questions, 4 choix possibles
+              ! Et tâchez de vous distinguer !
             </p>
             <img
               src={gif}
@@ -359,47 +337,66 @@ function Quiz() {
                 : sousQuestion === 4 &&
                   "Dans quel épisode a été dit cette citation ?"}
             </p>
-            <div className="bg-label rounded-[20px] w-[75%] text-center py-4 md:py-16 tall:py-4 mt-4">
-              <p className="text-black text-xs px-2 md:text-2xl tall:text-xl">
+            <div className="bg-label rounded-[20px] w-[75%] tall:min-w-[75%] tall:w-auto tall:max-w-[95%] text-center py-4 md:py-16 tall:py-4 mt-4">
+              <p className="text-black text-base px-2 md:text-2xl">
                 {citation[question - 1]}
               </p>
             </div>
-            <div className="grid gap-4 grid-cols-2 text-center pt-4 w-[60%]">
+            <div className="grid gap-4 grid-cols-2 text-center pt-4 w-auto min-w-[60%] max-w-[95%]">
               <div
-                className={`text-black py-[2px] md:py-2 tall:py-1 ${
+                className={`text-black py-[2px] md:py-2 tall:py-1 px-1 text-sm md:text-base ${
                   repValid[0] === false && "bg-[#a41919] text-label"
                 } ${repValid[0] === undefined && "bg-label"} ${
                   repValid[0] === true && "bg-[#008000] text-label"
                 }`}
               >
-                <p>Personnage</p>
+                <p>
+                  {repValid[0] === undefined
+                    ? "Personnage"
+                    : repPersonnage[question - 1]}
+                </p>
               </div>
               <div
-                className={`text-black py-[2px] md:py-2 tall:py-1 ${
+                className={`text-black py-[2px] md:py-2 tall:py-1 px-1 text-sm md:text-base ${
                   repValid[1] === false && "bg-[#a41919] text-label"
                 } ${repValid[1] === undefined && "bg-label"} ${
                   repValid[1] === true && "bg-[#008000] text-label"
                 }`}
               >
-                <p>Acteur</p>
+                <p>
+                  {" "}
+                  {repValid[1] === undefined
+                    ? "Acteur"
+                    : repActeur[question - 1]}
+                </p>
               </div>
               <div
-                className={`text-black py-[2px] md:py-2 tall:py-1 ${
+                className={`text-black py-[2px] md:py-2 tall:py-1 px-1 text-sm md:text-base ${
                   repValid[2] === false && "bg-[#a41919] text-label"
                 } ${repValid[2] === undefined && "bg-label"} ${
                   repValid[2] === true && "bg-[#008000] text-label"
                 }`}
               >
-                <p>Saison</p>
+                <p>
+                  {" "}
+                  {repValid[2] === undefined
+                    ? "Saison"
+                    : repSaison[question - 1]}
+                </p>
               </div>
               <div
-                className={`text-black py-[2px] md:py-2 tall:py-1 ${
+                className={`text-black py-[2px] md:py-2 tall:py-1 px-1 text-sm md:text-base ${
                   repValid[3] === false && "bg-[#a41919] text-label"
                 } ${repValid[3] === undefined && "bg-label"} ${
                   repValid[3] === true && "bg-[#008000] text-label"
                 }`}
               >
-                <p>Episode</p>
+                <p>
+                  {" "}
+                  {repValid[3] === undefined
+                    ? "Episode"
+                    : repEpisode[question - 1]}
+                </p>
               </div>
             </div>
             <div className="flex flex-col items-center w-screen">
@@ -467,15 +464,46 @@ function Quiz() {
       {question === 6 && (
         <div className="fixed z-50 bg-back w-screen h-[calc(100vh-6rem)] md:h-[calc(100vh-7rem)] tall:h-[calc(100vh-6rem)] flex items-center justify-center">
           <div className="bg-green w-[80%] md:w-[50%] h-auto py-8 min-h-[60%] rounded-[10px] flex flex-col items-center">
-            <p className="text-label text-4xl">Résultat:</p>
-            <p>
-              Bravo {username} tu as obtenu un score de: {score}
-            </p>
-            <img
-              src={score < 11 ? gifCon : gifChampion}
-              alt="Gif"
-              className="hidden md:block tall:hidden md:mt-8 md:max-h-[40%]"
-            />
+            <p className="text-label text-4xl underline">Résultat:</p>
+            {score >= 10 && (
+              <p className=" text-3xl mt-2 text-label text-center">
+                Braaavoooo {username}, bravo... Ton score est de : {score}
+              </p>
+            )}
+            {score <= 10 && (
+              <p className=" text-3xl px-6 mt-2 text-label text-center">
+                Retro pecat et rex domini {username}, ca ne veut rien dire mais
+                c'est toujours mieux que ton score de {score}
+              </p>
+            )}
+            {score <= 5 && (
+              <img
+                src={gifCon}
+                alt="Gif"
+                className="hidden md:block tall:hidden md:mt-8 md:max-h-[40%]"
+              />
+            )}
+            {score > 5 && score <= 10 && (
+              <img
+                src={gifPerdu}
+                alt="Gif"
+                className="hidden md:block tall:hidden md:mt-8 md:max-h-[40%]"
+              />
+            )}
+            {score > 10 && score <= 15 && (
+              <img
+                src={gifPro}
+                alt="Gif"
+                className="hidden md:block tall:hidden md:mt-8 md:max-h-[40%]"
+              />
+            )}
+            {score > 15 && (
+              <img
+                src={gifChampion}
+                alt="Gif"
+                className="hidden md:block tall:hidden md:mt-8 md:max-h-[40%]"
+              />
+            )}
             <button
               type="button"
               className="bg-label px-24 py-4 text-2xl rounded-[10px] hover:bg-label-hover mt-8"
